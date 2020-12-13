@@ -1,10 +1,11 @@
 from nhlib.nhRequest import *
 from nhlib.nhGlobal import *
+from bs4 import element
 
 
 class NhGallery :
     def __init__ ( self, title, link, thumb, tags: list ) :
-        self.title = NhGallery.legalize_title( title )
+        self.title = NhGallery.legalize_string( title )
         self.link = link
         self.tags = tags
         self.thumb = thumb
@@ -23,7 +24,7 @@ class NhGallery :
     
     
     @staticmethod
-    def legalize_title ( title: str ) -> str :
+    def legalize_string ( title: str ) -> str :
         new_title = title
         
         # if any illegal symbol in title, replace it
@@ -49,8 +50,32 @@ class NhGallery :
     def get_gallery_info_by_url ( url: str ) -> list :
         
         # get raw soup of this gallery
-        html = NhRequest.get2soup( url )
+        info_raw = NhRequest.get2soup( url ).find( "div", id = "info" )
         
-        #
+        # get japanese title
+        title_raw = info_raw.find( "h2", class_ = "title" )
         
+        # get author, title, other infos
+        author = title_raw.find( "span", class_ = "before" ).text
+        title = title_raw.find( "span", class_ = "pretty" ).text
+        others = title_raw.find( "span", class_ = "after" ).text
+        
+        # find pages from tags
+        pages = -1
+        tags = info_raw.find( "section", id = "tags" ).find_all( "div" )
+        
+        for tag in tags :
+            tag_text = tag.contents[0]
+            if "Pages" in tag_text :
+                pages = tag.span.text
+        
+        # find favorites from button
+        favorites = info_raw.find( "div", class_ = "buttons" ).a.span.span.text[1 :-1]
         pass
+        
+        return [author, title, others, pages, favorites]
+
+
+if __name__ == '__main__' :
+    res = NhGallery.get_gallery_info_by_url( "https://nhentai.net/g/339502/" )
+    pass

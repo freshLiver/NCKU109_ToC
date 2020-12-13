@@ -40,3 +40,6 @@ class NhRequest :
             populars.append( NhGallery( title, link, thumb, tags ) )
         
         return populars
+    
+if __name__ == '__main__':
+    pass
