@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup as BSoup
-from bs4 import element
 from requests import get
 
 from nhlib.nhGallery import *
@@ -7,6 +6,10 @@ from nhlib.nhGlobal import *
 
 
 class NhRequest :
+    
+    def __init__ ( self ) :
+        pass
+    
     
     @staticmethod
     def get2soup ( url: str ) -> BSoup :
@@ -24,22 +27,26 @@ class NhRequest :
         popular_galleries = soup.find( "div", class_ = "container index-container index-popular"
                                        ).find_all( "div", class_ = "gallery" )
         
-        populars = []
-        
         # parse raw populars into book info
-        popular: element.Tag
+        populars = []
         for popular in popular_galleries :
-            
+            # get infomations
             title = popular.a.find( "div", class_ = "caption" ).text
             link = NhGlobal.home + popular.a.get( "href" )
-            thumb = popular.a.img.get( "data-src" )
-            
-            # get lang from data tag
+            cover = popular.a.img.get( "data-src" )
             tags = str( popular.get( "data-tags" ) ).split( " " )
             
-            populars.append( NhGallery( title, link, thumb, tags ) )
+            # add to gallery list
+            populars.append( NhGallery( title, link, cover, tags ) )
         
+        # return result (popular galleries from home page)
         return populars
-    
-if __name__ == '__main__':
+
+
+# ************************************************
+# ************** class test section **************
+# ************************************************
+
+if __name__ == '__main__' :
+    res = NhRequest.get_populars( )
     pass

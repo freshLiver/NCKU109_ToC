@@ -1,27 +1,23 @@
 from nhlib.nhRequest import *
-from nhlib.nhGlobal import *
-from bs4 import element
 
 
 class NhGallery :
-    def __init__ ( self, title, link, thumb, tags: list ) :
+    
+    def __init__ ( self, title: str, link: str, cover: str, tags: list ) :
         self.title = NhGallery.legalize_string( title )
         self.link = link
         self.tags = tags
-        self.thumb = thumb
+        self.cover = cover
         self.lang = NhGallery.get_lang_from_tags( tags )
     
     
     def gallery_info ( self ) -> list :
-        pass
+        return [self.title, self.link, self.tags, self.lang, self.cover]
     
     
-    """
-    ************************
-    static methods
-    ************************
-    """
-    
+    # ************************************************
+    # **************** static methods ****************
+    # ************************************************
     
     @staticmethod
     def legalize_string ( title: str ) -> str :
@@ -50,31 +46,41 @@ class NhGallery :
     def get_gallery_info_by_url ( url: str ) -> list :
         
         # get raw soup of this gallery
-        info_raw = NhRequest.get2soup( url ).find( "div", id = "info" )
+        html_raw = NhRequest.get2soup( url )
+        info_raw = html_raw.find( "div", id = "info" )
         
-        # get japanese title
+        # get author, title, other infos from jp title
         title_raw = info_raw.find( "h2", class_ = "title" )
-        
-        # get author, title, other infos
         author = title_raw.find( "span", class_ = "before" ).text
         title = title_raw.find( "span", class_ = "pretty" ).text
-        others = title_raw.find( "span", class_ = "after" ).text
+        parody_translate_info = title_raw.find( "span", class_ = "after" ).text
         
         # find pages from tags
         pages = -1
         tags = info_raw.find( "section", id = "tags" ).find_all( "div" )
         
         for tag in tags :
-            tag_text = tag.contents[0]
-            if "Pages" in tag_text :
+            if "Pages" in tag.contents[0] :
                 pages = tag.span.text
+                break
         
-        # find favorites from button
+        # get num of favorite from button
         favorites = info_raw.find( "div", class_ = "buttons" ).a.span.span.text[1 :-1]
-        pass
         
-        return [author, title, others, pages, favorites]
+        # get image links from thumb images' link
+        images = []
+        thumbs_raw = html_raw.find( "div", class_ = "thumbs" ).find_all( "div" )
+        
+        for thumb in thumbs_raw :
+            thumb_link = thumb.a.img.get( "data-src" )
+            images.append( thumb_link.replace( "t.", "." ).replace( "//.", "//i." ) )
+        
+        return [[author, title, parody_translate_info], pages, favorites, images]
 
+
+# ************************************************
+# ************** class test section **************
+# ************************************************
 
 if __name__ == '__main__' :
     res = NhGallery.get_gallery_info_by_url( "https://nhentai.net/g/339502/" )
