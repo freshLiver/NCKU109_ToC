@@ -171,6 +171,8 @@ class NhUser :
                     if found == True :
                         # get opened gallery info and convert to reply form
                         reply = NhEyes.gallery_to_reply_form( gallery, None )
+                        # open gallery and set it new book
+                        NhEyes.set_this_gallery_new_book( gallery_index )
                         NhUser.__Eyes.push_state( NhCommand.OPEN )
                         reply += "$open done, now you can do $watch, $close, $home"
                     
