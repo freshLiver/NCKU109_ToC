@@ -1,14 +1,17 @@
+from nhlib.nhBook import *
+
+
 class NhEyes :
     
     def __init__ ( self ) :
         self.__galleries = []
-        self.__reading = None
+        self.__reading = NhBook( )
         self.__states = []
     
     
-    # ***************************************
-    # ********** gallery conversion *********
-    # ***************************************
+    # *********************************************************
+    # ******************* gallery conversion ******************
+    # *********************************************************
     @staticmethod
     def gallery_to_reply_form ( gallery: list, index = None ) -> str :
         # reply with index only while needed
@@ -47,9 +50,9 @@ class NhEyes :
         return (True, reply)
     
     
-    # ***************************************
-    # ************ add  controls ************
-    # ***************************************
+    # ********************************************************
+    # ********************** set status **********************
+    # ********************************************************
     
     def add_galleries ( self, galleries: list ) :
         self.__galleries += galleries
@@ -59,13 +62,18 @@ class NhEyes :
         self.__states.append( state )
     
     
-    # ***************************************
-    # ************** get status *************
-    # ***************************************
+    def set_this_gallery_new_book ( self, gallery_index: int ) :
+        gallery = self.__galleries[gallery_index]
+        self.__reading.set_new_book( gallery )
+    
+    
+    # *********************************************************
+    # *********************** get status **********************
+    # *********************************************************
     
     def get_current_state ( self ) -> str :
         # return last state in states (stack::top)
-        return self.__states[self.__states.__len__( )]
+        return self.__states[len( self.__states ) - 1]
     
     
     def get_gallery_by_index ( self, index: int ) -> (bool, list) :
@@ -79,18 +87,18 @@ class NhEyes :
     
     def get_reading_page_link ( self, page: int ) -> (bool, str) :
         # check if target page over current reading book's total pages
-        if 0 < page <= len( self.__reading ) :
-            # TODO : get target page's image link
-            link = self.__reading.pages[page]
+        if 0 <= page < self.__reading.get_total_pages( ) :
+            # get target page's image link
+            link = self.__reading.get_link_of_page( page )
             return (True, link)
         # page out of range
         else :
             return (False, "Target Page Out Of Range")
     
     
-    # ***************************************
-    # ************* clear status ************
-    # ***************************************
+    # *********************************************************
+    # ********************** clear status *********************
+    # *********************************************************
     
     def pop_state ( self ) :
         self.__states.pop( )
@@ -105,4 +113,4 @@ class NhEyes :
     
     
     def clear_reading ( self ) :
-        self.__reading = None
+        self.__reading.reset( )
