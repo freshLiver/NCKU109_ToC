@@ -13,3 +13,14 @@ class NhCommand :
     WATCH   = "$watch"
     CLOSE   = "$close"
     # @formatter:on
+    
+    @staticmethod
+    def is_command ( msg: str ) -> [bool, list] :
+        # tokenize message
+        tokens = msg.split( " " )
+        
+        # if first token is command, return true
+        if tokens[0] in NhCommand.COMMANDS :
+            return [True, tokens]
+        else :
+            return [False, tokens]
