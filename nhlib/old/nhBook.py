@@ -1,21 +1,27 @@
-from nhlib.nhRequest import *
-from nhlib.nhGallery import *
-
-
 class NhBook :
-    def __init__ ( self, title_info: list, id: int, pages: int, img_links: list ) :
+    def __init__ ( self ) :
+        self.title_info = None
+        self.gallery_id = None
+        self.pages = None
+        self.images = None
+    
+    
+    def set_book ( self, title_info: list, gallery_id: int, pages: int, img_links: list ) :
         self.title_info = title_info
-        self.id = id
+        self.gallery_id = gallery_id
         self.pages = pages
         self.images = img_links
     
+    
     def get_book_info ( self ) -> str :
         info = """
-        Title = {0},
-        ID    = {1},
-        Pages = {2},
-        """.format( self.title_info, self.id, self.pages )
-        
+        Author  = {0}
+        Title   = {1}
+        Info    - {2}
+        ID      = {3}
+        Pages   = {4}
+        """.format( self.title_info[0], self.title_info[1], self.title_info[2]
+                    , self.gallery_id, self.pages )
         return info
     
     

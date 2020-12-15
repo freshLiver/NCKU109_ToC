@@ -1,6 +1,3 @@
-from queue import Queue
-from nhlib.nhBook import *
-
 
 class NhGlobal :
     # requests relatives
@@ -25,15 +22,3 @@ class NhGlobal :
         , '*' : '＊'
     }
 
-
-class NhState :
-    # current state info
-    State = Queue( )
-    
-    # visible galleries
-    Visible = []
-    
-    # current hold book
-    Checking = None
-    
-    

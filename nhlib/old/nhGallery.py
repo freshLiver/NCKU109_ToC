@@ -1,4 +1,4 @@
-from nhlib.nhRequest import *
+from old.nhRequest import *
 
 
 class NhGallery :
@@ -11,8 +11,13 @@ class NhGallery :
         self.lang = NhGallery.get_lang_from_tags( tags )
     
     
-    def gallery_info ( self ) -> list :
-        return [self.title, self.link, self.tags, self.lang, self.cover]
+    def show_gallery_info ( self ) -> str :
+        info = """
+        Full Title   = {0}
+        Gallery Link = {1}
+        Language     = {2}
+        """.format( self.title, self.link, self.lang )
+        return info
     
     
     # ************************************************
@@ -54,6 +59,7 @@ class NhGallery :
         author = title_raw.find( "span", class_ = "before" ).text
         title = title_raw.find( "span", class_ = "pretty" ).text
         parody_translate_info = title_raw.find( "span", class_ = "after" ).text
+        gallery_id = info_raw.find( "h3", class_ = "gallery_id" ).text
         
         # find pages from tags
         pages = -1

@@ -1,8 +1,5 @@
-from bs4 import BeautifulSoup as BSoup
-from requests import get
-
-from nhlib.nhGallery import *
-from nhlib.nhGlobal import *
+from old.nhGallery import *
+from old.nhGlobal import *
 
 
 class NhRequest :
@@ -30,7 +27,7 @@ class NhRequest :
         # parse raw populars into book info
         populars = []
         for popular in popular_galleries :
-            # get infomations
+            # get info
             title = popular.a.find( "div", class_ = "caption" ).text
             link = NhGlobal.HOME + popular.a.get( "href" )
             cover = popular.a.img.get( "data-src" )
