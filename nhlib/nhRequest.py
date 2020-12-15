@@ -13,7 +13,7 @@ class NhRequest :
     
     @staticmethod
     def get2soup ( url: str ) -> BSoup :
-        raw = get( url, headers = NhGlobal.headers ).text
+        raw = get( url, headers = NhGlobal.HEADERS ).text
         soup = BSoup( raw, "html.parser" )
         return soup
     
@@ -21,7 +21,7 @@ class NhRequest :
     @staticmethod
     def get_populars ( ) -> list :
         # crawl home page
-        soup = NhRequest.get2soup( NhGlobal.home )
+        soup = NhRequest.get2soup( NhGlobal.HOME )
         
         # get popular books info from home page
         popular_galleries = soup.find( "div", class_ = "container index-container index-popular"
@@ -32,7 +32,7 @@ class NhRequest :
         for popular in popular_galleries :
             # get infomations
             title = popular.a.find( "div", class_ = "caption" ).text
-            link = NhGlobal.home + popular.a.get( "href" )
+            link = NhGlobal.HOME + popular.a.get( "href" )
             cover = popular.a.img.get( "data-src" )
             tags = str( popular.get( "data-tags" ) ).split( " " )
             

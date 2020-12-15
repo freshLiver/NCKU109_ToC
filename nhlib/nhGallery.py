@@ -24,9 +24,9 @@ class NhGallery :
         new_title = title
         
         # if any illegal symbol in title, replace it
-        for symbol in NhGlobal.illegals :
+        for symbol in NhGlobal.ILLEGAL_SYMBOLS :
             if symbol in new_title :
-                new_title.replace( symbol, NhGlobal.illegals[symbol] )
+                new_title.replace( symbol, NhGlobal.ILLEGAL_SYMBOLS[symbol] )
         
         return new_title
     
