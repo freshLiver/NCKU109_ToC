@@ -38,26 +38,42 @@ class NhRequest :
         
         # get popular books info from home page
         popular_container_class = "container index-container index-popular"
-        popular_raw = soup.find( "div", class_ = popular_container_class ).find_all( "div", class_ = "gallery" )
+        popular_items = soup.find( "div", class_ = popular_container_class ).find_all( "div", class_ = "gallery" )
         
         # parse raw populars into book info
         populars = []
-        for popular in popular_raw :
-            # get info
-            title = popular.a.find( "div", class_ = "caption" ).text
-            link = cls.__HOME + popular.a.get( "href" )
-            cover = popular.a.img.get( "data-src" )
-            tags = str( popular.get( "data-tags" ) ).split( " " )
+        for gallery_item in popular_items :
+            # get info from this gallery item
+            info: [str, str, str, list]
+            info = cls.__get_info_from_gallery_item( gallery_item )
             
             # add to gallery list
-            populars.append( NhGallery( title, link, cover, tags ) )
+            populars.append( NhGallery( info[0], info[1], info[2], info[3] ) )
         
         return populars
     
     
     @classmethod
-    def get_raw_galleries_from ( cls, nh_url: str ) -> [NhGallery] :
-        pass
+    def get_galleries_from ( cls, nh_url: str ) -> [NhGallery] :
+        
+        # get soup of this nh_page
+        soup = cls.__get2soup( nh_url )
+        gallery_container = soup.find( "div", class_ = "container index-container" )
+        
+        # get all gallery items from soup
+        galleries = list( )
+        gallery_items = gallery_container.find_all( "div", class_ = "gallery" )
+        
+        # get gallery info from every gallery in gallery container
+        for gallery_item in gallery_items :
+            # get info from this gallery item
+            info: [str, str, str, list]
+            info = cls.__get_info_from_gallery_item( gallery_item )
+            
+            # add to gallery list
+            galleries.append( NhGallery( info[0], info[1], info[2], info[3] ) )
+        
+        return galleries
     
     
     @classmethod
@@ -120,8 +136,22 @@ class NhRequest :
                 new_title.replace( symbol, cls.__ILLEGAL_SYMBOLS[symbol] )
         
         return new_title
+    
+    
+    @classmethod
+    def __get_info_from_gallery_item ( cls, gallery_item: BeautifulSoup ) -> [str, str, str, list] :
+        
+        # get info from this gallery item
+        title = gallery_item.a.find( "div", class_ = "caption" ).text
+        link = cls.__HOME + gallery_item.a.get( "href" )
+        cover = gallery_item.a.img.get( "data-src" )
+        tags = gallery_item.get( "data-tags" ).split( " " )
+        
+        return [title, link, cover, tags]
 
 
 if __name__ == '__main__' :
-    # detail = NhRequest.get_detail_from_gallery( "https://nhentai.net/g/339808/" )
+    detail = NhRequest.get_detail_from_gallery( "https://nhentai.net/g/339808/" )
+    populars = NhRequest.get_popular_galleries()
+    result = NhRequest.get_galleries_from( "https://nhentai.net/search/?q=kedama" )
     pass
