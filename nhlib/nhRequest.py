@@ -1,4 +1,6 @@
 from requests import get
+from requests.utils import quote
+
 from bs4 import BeautifulSoup
 import typing
 
@@ -29,6 +31,16 @@ class NhRequest :
         , '"' : '＂'
         , '*' : '＊'
     }
+    
+    
+    @staticmethod
+    def urlencode ( string: str ) -> str :
+        return quote( string )
+    
+    
+    @classmethod
+    def get_nh_home ( cls ) -> str :
+        return cls.__HOME
     
     
     @classmethod
@@ -151,7 +163,8 @@ class NhRequest :
 
 
 if __name__ == '__main__' :
-    detail = NhRequest.get_detail_from_gallery( "https://nhentai.net/g/339808/" )
-    populars = NhRequest.get_popular_galleries()
-    result = NhRequest.get_galleries_from( "https://nhentai.net/search/?q=kedama" )
+    # detail = NhRequest.get_detail_from_gallery( "https://nhentai.net/g/339808/" )
+    # populars = NhRequest.get_popular_galleries( )
+    # result = NhRequest.get_galleries_from( "https://nhentai.net/search/?q=kedama" )
+    res = NhRequest.urlencode( "artist:tamano kedama" )
     pass
