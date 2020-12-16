@@ -1,6 +1,7 @@
 from nhlib.nhEyes import *
 from nhlib.nhHand import *
 from nhlib.nhCommand import *
+from nhlib.nhGallery import *
 
 
 class NhUser :
@@ -165,14 +166,15 @@ class NhUser :
                 # use tokens[1] to select target gallery, if not int -> ValueError
                 try :
                     gallery_index = int( tokens[1] )
+                    gallery: NhGallery
                     found, gallery = NhUser.__Eyes.get_gallery_by_index( gallery_index )
                     
                     # check if this index out of range
                     if found == True :
                         # get opened gallery info and convert to reply form
-                        reply = NhEyes.gallery_to_reply_form( gallery, None )
+                        reply = gallery.get_reply_form( None )
                         # open gallery and set it new book
-                        NhEyes.set_this_gallery_new_book( gallery_index )
+                        NhUser.__Eyes.set_this_gallery_new_book( gallery_index )
                         NhUser.__Eyes.push_state( NhCommand.OPEN )
                         reply += "$open done, now you can do $watch, $close, $home"
                     
