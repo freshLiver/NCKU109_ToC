@@ -5,11 +5,11 @@ class NhGallery :
         self.link = link
         self.cover = cover
         self.tags = tags
-        self.lang = NhGallery.extract_lang_from_tags( tags )
+        self.lang = NhGallery.__extract_lang_from_tags( tags )
     
     
     @staticmethod
-    def extract_lang_from_tags ( tags: list ) -> str :
+    def __extract_lang_from_tags ( tags: list ) -> str :
         if "29963" in tags :
             return "Chinese"
         if "12227" in tags :

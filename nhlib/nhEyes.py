@@ -52,7 +52,7 @@ class NhEyes :
     
     def set_this_gallery_new_book ( self, gallery_index: int ) :
         gallery = self.__galleries[gallery_index]
-        self.__reading.set_new_book( gallery.link )
+        self.__reading.check_this_book( gallery.link )
     
     
     # *********************************************************
@@ -101,4 +101,4 @@ class NhEyes :
     
     
     def clear_reading ( self ) :
-        self.__reading.reset( )
+        self.__reading.close_this_book( )
