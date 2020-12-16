@@ -9,22 +9,22 @@ class NhUser :
     __Eyes = NhEyes( )
     
     
-    @staticmethod
-    def do_command ( tokens: list ) -> str :
+    @classmethod
+    def do_command ( cls, tokens: list ) -> str :
         reply = ""
         
-        current_state = NhUser.__Eyes.get_current_state( )
+        current_state = cls.__Eyes.get_current_state( )
         # #############################################################
         # ##################### back to home page #####################
         # #############################################################
         if tokens[0] == "$home" :
             # reset status and page
-            NhUser.__Eyes.clear_state( )
-            NhUser.__Eyes.clear_galleries( )
-            NhUser.__Eyes.clear_reading( )
-            NhUser.__Hand.reset_link_and_page( )
+            cls.__Eyes.clear_state( )
+            cls.__Eyes.clear_galleries( )
+            cls.__Eyes.clear_reading( )
+            cls.__Hand.reset_link_and_page( )
             # push current state
-            NhUser.__Eyes.push_state( tokens[0] )
+            cls.__Eyes.push_state( tokens[0] )
             # reply available commands
             reply = "$home done, now you can do $popular, $newest, $search, $home"
         
@@ -36,17 +36,17 @@ class NhUser :
             # only available while current state is home
             if current_state == NhCommand.HOME :
                 # get popular galleries and convert to reply form
-                populars = NhUser.__Hand.get_popular_result( )
+                populars = cls.__Hand.get_popular_result( )
                 found, reply = NhEyes.galleries_to_reply_form( populars )
                 
                 # check if any galleries found
                 if found == True :
                     # clear and add result galleries
-                    NhUser.__Eyes.clear_galleries( )
-                    NhUser.__Eyes.add_galleries( populars )
+                    cls.__Eyes.clear_galleries( )
+                    cls.__Eyes.add_galleries( populars )
                     
                     # push into newest state
-                    NhUser.__Eyes.push_state( NhCommand.POPULAR )
+                    cls.__Eyes.push_state( NhCommand.POPULAR )
                     
                     reply += "$popular done, now you can do $open, $home"
                 else :
@@ -61,17 +61,17 @@ class NhUser :
             # only available while current state is home
             if current_state == NhCommand.HOME :
                 # get newest galleries and convert to reply form
-                newest = NhUser.__Hand.get_newest_result( 0 )
+                newest = cls.__Hand.get_newest_result( 0 )
                 found, reply = NhEyes.galleries_to_reply_form( newest )
                 
                 # check if any galleries found
                 if found == True :
                     # clear and add result galleries
-                    NhUser.__Eyes.clear_galleries( )
-                    NhUser.__Eyes.add_galleries( newest )
+                    cls.__Eyes.clear_galleries( )
+                    cls.__Eyes.add_galleries( newest )
                     
                     # push into newest state
-                    NhUser.__Eyes.push_state( NhCommand.NEWEST )
+                    cls.__Eyes.push_state( NhCommand.NEWEST )
                     
                     reply += "$newest done, now you can do $open, $next(maybe failed), $home"
                 else :
@@ -89,17 +89,17 @@ class NhUser :
                 # use remain tokens as keywords to search
                 keywords = tokens[1 :]
                 # get search galleries and convert to reply form
-                search_result = NhUser.__Hand.get_search_result( keywords, 0 )
+                search_result = cls.__Hand.get_search_result( keywords, 0 )
                 found, reply = NhEyes.galleries_to_reply_form( search_result )
                 
                 # check if any galleries found
                 if found == True :
                     # clear and add result galleries
-                    NhUser.__Eyes.clear_galleries( )
-                    NhUser.__Eyes.add_galleries( search_result )
+                    cls.__Eyes.clear_galleries( )
+                    cls.__Eyes.add_galleries( search_result )
                     
                     # push into search state
-                    NhUser.__Eyes.push_state( NhCommand.SEARCH )
+                    cls.__Eyes.push_state( NhCommand.SEARCH )
                     
                     reply += "$search done, now you can do $open, $next(maybe failed), $home"
                 else :
@@ -114,14 +114,14 @@ class NhUser :
             # only available while search or newest
             if current_state in [NhCommand.SEARCH, NhCommand.NEWEST] :
                 # get next page galleries and convert to replay form
-                next_page_result = NhUser.__Hand.get_next_page_result( )
+                next_page_result = cls.__Hand.get_next_page_result( )
                 found, reply = NhEyes.galleries_to_reply_form( next_page_result )
                 
                 # check if any galleries found
                 if found == True :
                     # clear and add next page's galleries
-                    NhUser.__Eyes.clear_galleries( )
-                    NhUser.__Eyes.add_galleries( next_page_result )
+                    cls.__Eyes.clear_galleries( )
+                    cls.__Eyes.add_galleries( next_page_result )
                     
                     reply += "$next done, now you can do $open, $next(maybe failed), $home"
                 else :
@@ -139,14 +139,14 @@ class NhUser :
                     # try to use tokens[1] as page, if not int -> ValueError
                     target_page = int( tokens[1] )
                     # get target page result
-                    target_galleries = NhUser.__Hand.get_result_of_page( target_page )
+                    target_galleries = cls.__Hand.get_result_of_page( target_page )
                     found, reply = NhEyes.galleries_to_reply_form( target_galleries )
                     
                     # check if any galleries found
                     if found == True :
                         # clear and add target galleries
-                        NhUser.__Eyes.clear_galleries( )
-                        NhUser.__Eyes.add_galleries( target_galleries )
+                        cls.__Eyes.clear_galleries( )
+                        cls.__Eyes.add_galleries( target_galleries )
                         
                         reply += "$goto done, now you can do $open, $next(maybe failed), $home"
                     else :
@@ -167,15 +167,15 @@ class NhUser :
                 try :
                     gallery_index = int( tokens[1] )
                     gallery: NhGallery
-                    found, gallery = NhUser.__Eyes.get_gallery_by_index( gallery_index )
+                    found, gallery = cls.__Eyes.get_gallery_by_index( gallery_index )
                     
                     # check if this index out of range
                     if found == True :
                         # get opened gallery info and convert to reply form
                         reply = gallery.get_reply_form( None )
                         # open gallery and set it new book
-                        NhUser.__Eyes.set_this_gallery_new_book( gallery_index )
-                        NhUser.__Eyes.push_state( NhCommand.OPEN )
+                        cls.__Eyes.set_this_gallery_new_book( gallery_index )
+                        cls.__Eyes.push_state( NhCommand.OPEN )
                         reply += "$open done, now you can do $watch, $close, $home"
                     
                     # gallery index out of range
@@ -197,7 +197,7 @@ class NhUser :
                     page = int( tokens[1] )
                     
                     # try to get target page from current reading book
-                    found, url = NhUser.__Eyes.get_reading_page_link( page )
+                    found, url = cls.__Eyes.get_reading_page_link( page )
                     if found == True :
                         # TODO : get page image and convert to image message
                         reply += "$watch done, now you can do $watch, $close, $home"
@@ -218,12 +218,12 @@ class NhUser :
             # only available while open
             if current_state == NhCommand.OPEN :
                 # close and clear current reading
-                NhUser.__Eyes.clear_reading( )
+                cls.__Eyes.clear_reading( )
                 # pop current state (go back to last state)
-                NhUser.__Eyes.pop_state( )
+                cls.__Eyes.pop_state( )
                 
                 # check if new state is popular
-                if NhUser.__Eyes.get_current_state( ) == NhCommand.POPULAR :
+                if cls.__Eyes.get_current_state( ) == NhCommand.POPULAR :
                     reply = "$close done, now you can do $open, $home"
                 else :
                     reply = "$close done, now you can do $open, $next(may be failed), $home"
