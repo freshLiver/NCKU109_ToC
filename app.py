@@ -1,7 +1,7 @@
 import os
 import sys
 
-from flask import Flask, jsonify, request, abort, send_file
+from flask import Flask, request, abort, send_file
 from dotenv import load_dotenv
 from linebot import LineBotApi, WebhookParser
 from linebot.exceptions import InvalidSignatureError
@@ -9,7 +9,6 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
 from fsm import TocMachine
 from utils import send_text_message
-
 
 load_dotenv( )
 
@@ -51,13 +50,10 @@ if channel_access_token is None :
 line_bot_api = LineBotApi( channel_access_token )
 parser = WebhookParser( channel_secret )
 
-# for storing states and other infos
-
-
 
 @app.route( "/callback", methods = ["POST"] )
 def callback ( ) :
-    signature = request.HEADERS["X-Line-Signature"]
+    signature = request.__HEADERS["X-Line-Signature"]
     # get request body as text
     body = request.get_data( as_text = True )
     app.logger.info( "Request body: " + body )
@@ -84,7 +80,7 @@ def callback ( ) :
 
 @app.route( "/webhook", methods = ["POST"] )
 def webhook_handler ( ) :
-    signature = request.HEADERS["X-Line-Signature"]
+    signature = request.__HEADERS["X-Line-Signature"]
     # get request body as text
     body = request.get_data( as_text = True )
     app.logger.info( f"Request body: {body}" )

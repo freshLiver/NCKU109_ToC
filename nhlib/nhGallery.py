@@ -20,6 +20,8 @@ class NhGallery :
     
     
     def get_reply_form ( self, index = None ) -> str :
+        
+        # if given index, show index in reply message
         reply = "" if index is None else "Gallery  : {0}".format( index )
         
         # convert gallery info into reply form
