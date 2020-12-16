@@ -1,37 +1,21 @@
+from nhlib.nhCommand import *
 from nhlib.nhBook import *
+from nhlib.nhGallery import *
 
 
 class NhEyes :
     
     def __init__ ( self ) :
-        self.__galleries = []
+        self.__states: [NhCommand]
+        self.__states = list( )
+        self.__galleries: [NhGallery]
+        self.__galleries = list( )
         self.__reading = NhBook( )
-        self.__states = []
     
     
     # *********************************************************
     # ******************* gallery conversion ******************
     # *********************************************************
-    @staticmethod
-    def gallery_to_reply_form ( gallery: list, index = None ) -> str :
-        # reply with index only while needed
-        reply = ""
-        if index is not None :
-            reply += "Gallery ID : {0}".format( index )
-        
-        # append basic gallery infos
-        # TODO : convert gallery infos into reply form
-        reply += """
-        -- Title : {0}
-        -- Lang  : {1}
-        -- Link  : {2}
-        -- Thumb : {3}
-        ------------------------------
-        """.format( gallery[0], gallery[1], gallery[2], gallery[3] )
-        
-        # return reply form of this gallery
-        return reply
-    
     
     @staticmethod
     def galleries_to_reply_form ( galleries: list ) -> (bool, str) :
@@ -43,8 +27,9 @@ class NhEyes :
         reply = ""
         
         # append each gallery info in galleries to reply
+        gallery: NhGallery
         for index, gallery in enumerate( galleries ) :
-            reply += NhEyes.gallery_to_reply_form( gallery, index )
+            reply += gallery.get_reply_form( index )
         
         # return all galleries' info as reply message
         return (True, reply)
@@ -54,17 +39,20 @@ class NhEyes :
     # ********************** set status **********************
     # ********************************************************
     
-    def add_galleries ( self, galleries: list ) :
-        self.__galleries += galleries
+    def add_galleries ( self, galleries: [NhGallery] ) :
+        # convert every raw gallery info to NhGallery
+        for gallery in galleries :
+            # append to galleries list
+            self.__galleries.append( gallery )
     
     
-    def push_state ( self, state: str ) :
+    def push_state ( self, state: NhCommand ) :
         self.__states.append( state )
     
     
     def set_this_gallery_new_book ( self, gallery_index: int ) :
         gallery = self.__galleries[gallery_index]
-        self.__reading.set_new_book( gallery )
+        self.__reading.set_new_book( gallery.link )
     
     
     # *********************************************************
