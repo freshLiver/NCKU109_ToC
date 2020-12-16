@@ -89,7 +89,7 @@ class NhUser :
                 # use remain tokens as keywords to search
                 keywords = tokens[1 :]
                 # get search galleries and convert to reply form
-                search_result = cls.__Hand.get_search_result( keywords, 0 )
+                search_result = cls.__Hand.get_search_result( keywords, 1 )
                 found, reply = NhEyes.galleries_to_reply_form( search_result )
                 
                 # check if any galleries found
