@@ -29,7 +29,7 @@ class NhEyes :
         # append each gallery info in galleries to reply
         gallery: NhGallery
         for index, gallery in enumerate( galleries ) :
-            reply += gallery.get_reply_form( index )
+            reply += gallery.get_reply_form( index = index )
         
         # return all galleries' info as reply message
         return (True, reply)
@@ -50,9 +50,13 @@ class NhEyes :
         self.__states.append( state )
     
     
-    def check_this_gallery ( self, gallery_index: int ) :
+    def open_this_gallery ( self, gallery_index: int ) :
         gallery = self.__galleries[gallery_index]
         self.__reading.set_this_gallery( gallery.link )
+    
+    
+    def get_reading_gallery_info ( self ) -> str :
+        return self.__reading.book_info_to_reply( )
     
     
     # *********************************************************
