@@ -4,6 +4,8 @@ from nhlib.nhGallery import *
 
 
 class NhEyes :
+    __is_healthy_mode = True
+    
     
     def __init__ ( self ) :
         self.__states: [NhCommand]
@@ -58,6 +60,15 @@ class NhEyes :
     def get_reading_gallery_info ( self ) -> str :
         return self.__reading.book_info_to_reply( )
     
+    
+    @classmethod
+    def toggle_mode ( cls ) -> bool :
+        cls.__is_healthy_mode = not cls.__is_healthy_mode
+        return cls.__is_healthy_mode
+    
+    @classmethod
+    def get_mode (cls) -> bool:
+        return cls.__is_healthy_mode
     
     # *********************************************************
     # *********************** get status **********************

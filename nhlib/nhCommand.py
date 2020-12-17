@@ -1,5 +1,6 @@
 class NhCommand :
-    COMMANDS = ["$home", "$popular", "$search", "$newest",
+    COMMANDS = ["$home", "$help", "$switch",
+                "$popular", "$search", "$newest",
                 "$goto", "$next", "$open", "$watch", "$close"]
     
     # @formatter:off
@@ -12,6 +13,9 @@ class NhCommand :
     OPEN    = "$open"
     WATCH   = "$watch"
     CLOSE   = "$close"
+    
+    HELP    = "$help"
+    SWITCH  = "$switch"
     # @formatter:on
     
     @staticmethod

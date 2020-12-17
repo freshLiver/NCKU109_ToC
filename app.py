@@ -122,7 +122,7 @@ def webhook_handler ( ) :
             # check if this has image url
             if img_url is not None :
                 # send a image
-                send_image_by_url( event.reply_token, img_url, NhRequest.get_warning( ) )
+                send_image_by_url( event.reply_token, img_url, NhRequest.get_warning( ), NhEyes.get_mode( ) )
             # reply user with message
             send_text_message( event.reply_token, event.source.user_id, reply )
     

@@ -51,7 +51,12 @@ class NhHand :
     
     
     @classmethod
-    def get_result_of_this_page ( cls, page: int ) -> [NhRequest] :
+    def get_result_of_this_page ( cls, page: int ) -> [NhGallery] :
+        
+        # check target page (should not be negative)
+        if page < 0 :
+            return list( )
+        
         # replace last state's url with new page
         target_page_url = cls.__last_link.split( "page=" )[0] + "page={0}".format( page )
         

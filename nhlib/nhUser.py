@@ -79,7 +79,7 @@ class NhUser :
                     cls.__Eyes.push_state( NhCommand.NEWEST )
                     
                     cls.__Reply.add_message( reply )
-                    cls.__Reply.add_message( "$newest 成功, 可用的指令有 $open, $next(若沒下一頁會失敗), $home" )
+                    cls.__Reply.add_message( "$newest 成功, 可用的指令有 $open, $next, $goto, $home" )
                 
                 else :
                     cls.__Reply.add_message( "$newest 失敗, 找不到 $newest" )
@@ -114,7 +114,7 @@ class NhUser :
                         cls.__Eyes.push_state( NhCommand.SEARCH )
                         
                         cls.__Reply.add_message( reply )
-                        cls.__Reply.add_message( "$search 成功, 可用的指令有 $open, $next(若沒下一頁會失敗), $home" )
+                        cls.__Reply.add_message( "$search 成功, 可用的指令有 $open, $next, $goto, $home" )
                     
                     else :
                         cls.__Reply.add_message( "$search 失敗, 此關鍵字無搜尋結果" )
@@ -142,7 +142,7 @@ class NhUser :
                     cls.__Eyes.add_galleries( next_page_result )
                     
                     cls.__Reply.add_message( reply )
-                    cls.__Reply.add_message( "$next 成功, 可用的指令有 $open, $next(若沒下一頁會失敗), $home" )
+                    cls.__Reply.add_message( "$next 成功, 可用的指令有 $open, $next, $goto, $home" )
                 else :
                     cls.__Reply.add_message( "$next 失敗, 找不到下一頁" )
             else :
@@ -159,21 +159,25 @@ class NhUser :
                 try :
                     # try to use tokens[1] as page, if not int -> ValueError
                     target_page = int( tokens[1] )
+                    
+                    if target_page == 0 :
+                        target_page = 1
+                        cls.__Reply.add_message( ">>> $goto 要從 1 開始，自動導向到 $goto 1 <<<\n\n" )
+                    
                     # get target page result
                     target_galleries = cls.__Hand.get_result_of_this_page( target_page )
                     found, reply = NhEyes.galleries_to_reply_form( target_galleries )
-                    
                     # check if any galleries found
                     if found == True :
                         # clear and add target galleries
                         cls.__Eyes.clear_galleries( )
                         cls.__Eyes.add_galleries( target_galleries )
                         cls.__Reply.add_message( reply )
-                        cls.__Reply.add_message( "$goto 成功, 可用的指令有 $open, $next(若沒下一頁會失敗), $home" )
+                        cls.__Reply.add_message( "$goto 成功, 可用的指令有 $open, $next, $goto, $home" )
                     
                     else :
                         cls.__Reply.add_message( "$goto 失敗, 指定的頁數不存在" )
-                        
+                
                 except IndexError :
                     cls.__Reply.add_message( "$goto 失敗, 不輸入頁數是要我通靈？" )
                 except ValueError :
@@ -238,7 +242,7 @@ class NhUser :
                         cls.__Reply.add_message( "$watch 成功, 可用的指令有 $watch, $close, $home" )
                     
                     else :
-                        cls.__Reply.add_message( "$watch 失敗, 指定頁數超出範圍" )
+                        cls.__Reply.add_message( "$watch 失敗, 指定頁數超出範圍（從 0 開始）" )
                 except IndexError :
                     cls.__Reply.add_message( "$watch 失敗, 不輸入頁數是要我通靈？" )
                 except ValueError :
@@ -263,10 +267,42 @@ class NhUser :
                 if cls.__Eyes.get_current_state( ) == NhCommand.POPULAR :
                     cls.__Reply.add_message( "$close 成功, 可用的指令有 $open, $home" )
                 else :
-                    cls.__Reply.add_message( "$close 成功, 可用的指令有 $open, $next(若沒下一頁會失敗), $home" )
+                    cls.__Reply.add_message( "$close 成功, 可用的指令有 $open, $next, $goto, $home" )
             else :
                 cls.__Reply.add_message( "$close 失敗, 沒先 $open 是要 $close 什麼？" )
         
+        # ##############################################################
+        # ################ show help info (state graph) ################
+        # ##############################################################
+        elif tokens[0] == NhCommand.HELP :
+            help_msg = ""
+            help_msg += """\n┌─ {0} (預設, 可在任何狀態使用)""".format( NhCommand.HOME )
+            help_msg += """\n├─ {0} (可在任何狀態使用)""".format( NhCommand.HELP )
+            help_msg += """\n├─ {0} (可在任何狀態使用)""".format( NhCommand.SWITCH )
+            help_msg += """\n│"""
+            help_msg += """\n├─── {0} (不可使用 {1}, {2})""".format( NhCommand.POPULAR, NhCommand.GOTO, NhCommand.NEWEST )
+            help_msg += """\n├─── {0}""".format( NhCommand.NEWEST )
+            help_msg += """\n├─── {0}""".format( NhCommand.SEARCH )
+            help_msg += """\n│"""
+            help_msg += """\n├───── {0} (不會進入下一層)""".format( NhCommand.NEXT )
+            help_msg += """\n├───── {0} (不會進入下一層)""".format( NhCommand.GOTO )
+            help_msg += """\n├───── {0}""".format( NhCommand.OPEN )
+            help_msg += """\n│"""
+            help_msg += """\n├─────── {0}""".format( NhCommand.WATCH )
+            help_msg += """\n└─────── {0} (會回到原本狀態)""".format( NhCommand.CLOSE )
+            cls.__Reply.add_message( help_msg )
+        
+        
+        # ###############################################################
+        # #################### NOT BELONGS ANY STATE ####################
+        # ###############################################################
+        elif tokens[0] == NhCommand.SWITCH :
+            healthy_mode = cls.__Eyes.toggle_mode( )
+            
+            if healthy_mode == True :
+                cls.__Reply.add_message( "開啟健康模式" )
+            else :
+                cls.__Reply.add_message( "開啟老司機模式" )
         
         # ###############################################################
         # #################### NOT BELONGS ANY STATE ####################

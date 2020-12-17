@@ -21,11 +21,16 @@ def send_text_message ( reply_token: str, to: str, text: str ) :
     return "OK"
 
 
-def send_image_by_url ( reply_token: str, origin: str, preview: str ) :
+def send_image_by_url ( reply_token: str, origin: str, preview: str, hide18: bool ) :
     # get bot api
     bot = LineBotApi( channel_access_token )
+    
     # convert origin img and preview img into image message
-    image_msg = ImageSendMessage( origin, preview )
+    if hide18 == True :
+        image_msg = ImageSendMessage( origin, preview )
+    else :
+        image_msg = ImageSendMessage( origin, origin )
+    
     # push this image msg
     bot.reply_message( reply_token, image_msg )
     
