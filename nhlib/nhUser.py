@@ -2,37 +2,39 @@ from nhlib.nhEyes import *
 from nhlib.nhHand import *
 from nhlib.nhCommand import *
 from nhlib.nhGallery import *
+from nhlib.nhReply import *
 
 
 class NhUser :
     __Hand = NhHand( )
     __Eyes = NhEyes( )
+    __Reply = NhReply( )
     
     
     @classmethod
-    def do_command ( cls, tokens: list ) -> str :
-        reply = ""
-        
+    def do_command ( cls, tokens: list ) -> NhReply :
+        cls.__Reply.reset( )
         current_state = cls.__Eyes.get_current_state( )
+        
         # #############################################################
         # ##################### back to home page #####################
         # #############################################################
-        if tokens[0] == "$home" :
+        if tokens[0] == NhCommand.HOME :
             # reset status and page
             cls.__Eyes.clear_state( )
             cls.__Eyes.clear_galleries( )
             cls.__Eyes.clear_reading( )
             cls.__Hand.reset_link_and_page( )
-            # push current state
-            cls.__Eyes.push_state( tokens[0] )
+            
             # reply available commands
-            reply = "$home done, now you can do $popular, $newest, $search, $home"
+            cls.__Reply.add_message( "$home done, now you can do $popular, $newest, $search, $home" )
+        
         
         
         # ###############################################################
         # #################### get popular galleries ####################
         # ###############################################################
-        elif tokens[0] == "$popular" :
+        elif tokens[0] == NhCommand.POPULAR :
             # only available while current state is home
             if current_state == NhCommand.HOME :
                 # get popular galleries and convert to reply form
@@ -48,16 +50,19 @@ class NhUser :
                     # push into newest state
                     cls.__Eyes.push_state( NhCommand.POPULAR )
                     
-                    reply += "$popular done, now you can do $open, $home"
+                    cls.__Reply.add_message( reply )
+                    cls.__Reply.add_message( "$popular done, now you can do $open, $home" )
                 else :
-                    reply = "$newest failed, newest gallery not found"
+                    cls.__Reply.add_message( "$newest failed, newest gallery not found" )
             else :
-                reply = "$popular failed, you should at $home"
+                cls.__Reply.add_message( "$popular failed, you should at $home" )
+        
+        
         
         # ##############################################################
         # #################### get newest galleries ####################
         # ##############################################################
-        elif tokens[0] == "$newest" :
+        elif tokens[0] == NhCommand.NEWEST :
             # only available while current state is home
             if current_state == NhCommand.HOME :
                 # get newest galleries and convert to reply form
@@ -73,44 +78,57 @@ class NhUser :
                     # push into newest state
                     cls.__Eyes.push_state( NhCommand.NEWEST )
                     
-                    reply += "$newest done, now you can do $open, $next(maybe failed), $home"
+                    cls.__Reply.add_message( reply )
+                    cls.__Reply.add_message( "$newest done, now you can do $open, $next(maybe failed), $home" )
+                
                 else :
-                    reply = "$newest failed, newest gallery not found"
+                    cls.__Reply.add_message( "$newest failed, newest gallery not found" )
             
             else :
-                reply = "$newest failed, you should at $home"
+                cls.__Reply.add_message( "$newest failed, you should at $home" )
+        
+        
         
         # ##############################################################
         # ###################### search galleries ######################
         # ##############################################################
-        elif tokens[0] == "$search" :
+        elif tokens[0] == NhCommand.SEARCH :
             # only available while current state is home
             if current_state == NhCommand.HOME :
                 # use remain tokens as keywords to search
                 keywords = tokens[1 :]
-                # get search galleries and convert to reply form
-                search_result = cls.__Hand.get_search_result( keywords, 1 )
-                found, reply = NhEyes.galleries_to_reply_form( search_result )
                 
-                # check if any galleries found
-                if found == True :
-                    # clear and add result galleries
-                    cls.__Eyes.clear_galleries( )
-                    cls.__Eyes.add_galleries( search_result )
+                # check if search without keywords
+                if keywords != [] :
+                    # get search galleries and convert to reply form
+                    search_result = cls.__Hand.get_search_result( keywords, 1 )
+                    found, reply = NhEyes.galleries_to_reply_form( search_result )
                     
-                    # push into search state
-                    cls.__Eyes.push_state( NhCommand.SEARCH )
+                    # check if any galleries found
+                    if found == True :
+                        # clear and add result galleries
+                        cls.__Eyes.clear_galleries( )
+                        cls.__Eyes.add_galleries( search_result )
+                        
+                        # push into search state
+                        cls.__Eyes.push_state( NhCommand.SEARCH )
+                        
+                        cls.__Reply.add_message( reply )
+                        cls.__Reply.add_message( "$search done, now you can do $open, $next(maybe failed), $home" )
                     
-                    reply += "$search done, now you can do $open, $next(maybe failed), $home"
+                    else :
+                        cls.__Reply.add_message( "$search failed, search result not found" )
                 else :
-                    reply = "$search failed, search result not found"
+                    cls.__Reply.add_message( "$search failed, you should not do search without keywords" )
             else :
-                reply = "$search failed, you should at $home"
+                cls.__Reply.add_message( "$search failed, you should at $home" )
+        
+        
         
         # ##############################################################
         # ####################### goto next page #######################
         # ##############################################################
-        elif tokens[0] == "$next" :
+        elif tokens[0] == NhCommand.NEXT :
             # only available while search or newest
             if current_state in [NhCommand.SEARCH, NhCommand.NEWEST] :
                 # get next page galleries and convert to replay form
@@ -123,23 +141,26 @@ class NhUser :
                     cls.__Eyes.clear_galleries( )
                     cls.__Eyes.add_galleries( next_page_result )
                     
-                    reply += "$next done, now you can do $open, $next(maybe failed), $home"
+                    cls.__Reply.add_message( reply )
+                    cls.__Reply.add_message( "$next done, now you can do $open, $next(maybe failed), $home" )
                 else :
-                    reply = "$next failed, next page not found"
+                    cls.__Reply.add_message( "$next failed, next page not found" )
             else :
-                reply = "$next failed, you should at $search or $newest"
+                cls.__Reply.add_message( "$next failed, you should at $search or $newest" )
+        
+        
         
         # #############################################################
         # ######################## goto page N ########################
         # #############################################################
-        elif tokens[0] == "$goto" :
+        elif tokens[0] == NhCommand.GOTO :
             # only available while search or newest
             if current_state in [NhCommand.SEARCH, NhCommand.NEWEST] :
                 try :
                     # try to use tokens[1] as page, if not int -> ValueError
                     target_page = int( tokens[1] )
                     # get target page result
-                    target_galleries = cls.__Hand.get_result_of_page( target_page )
+                    target_galleries = cls.__Hand.get_result_of_this_page( target_page )
                     found, reply = NhEyes.galleries_to_reply_form( target_galleries )
                     
                     # check if any galleries found
@@ -147,20 +168,22 @@ class NhUser :
                         # clear and add target galleries
                         cls.__Eyes.clear_galleries( )
                         cls.__Eyes.add_galleries( target_galleries )
-                        
-                        reply += "$goto done, now you can do $open, $next(maybe failed), $home"
+                        cls.__Reply.add_message( reply )
+                        cls.__Reply.add_message( "$goto done, now you can do $open, $next(maybe failed), $home" )
+                    
                     else :
-                        reply = "$goto failed, target page not found"
-                
+                        cls.__Reply.add_message( "$goto failed, target page not found" )
                 except ValueError :
-                    reply = "$goto failed, invalid page number"
+                    cls.__Reply.add_message( "$goto failed, invalid page number" )
             else :
-                reply = "$goto failed, you should at $search or $newest"
+                cls.__Reply.add_message( "$goto failed, you should at $search or $newest" )
+        
+        
         
         # ##############################################################
         # ##################### open this gallery #####################
         # ##############################################################
-        elif tokens[0] == "open" :
+        elif tokens[0] == NhCommand.OPEN :
             # only available while popular, search, newest
             if current_state in [NhCommand.POPULAR, NhCommand.SEARCH, NhCommand.NEWEST] :
                 # use tokens[1] to select target gallery, if not int -> ValueError
@@ -174,47 +197,51 @@ class NhUser :
                         # get opened gallery info and convert to reply form
                         reply = gallery.get_reply_form( None )
                         # open gallery and set it new book
-                        cls.__Eyes.set_this_gallery_new_book( gallery_index )
+                        cls.__Eyes.check_this_gallery( gallery_index )
                         cls.__Eyes.push_state( NhCommand.OPEN )
-                        reply += "$open done, now you can do $watch, $close, $home"
+                        
+                        cls.__Reply.add_message( reply )
+                        cls.__Reply.add_message( "$open done, now you can do $watch, $close, $home" )
                     
                     # gallery index out of range
                     else :
-                        reply = "$open failed, gallery index out of range"
+                        cls.__Reply.add_message( "$open failed, gallery index out of range" )
                 except ValueError :
-                    reply = "$open failed, invalid gallery index"
+                    cls.__Reply.add_message( "$open failed, invalid gallery index" )
             else :
-                reply = "$open failed, you should at $popular, $search, $newest"
+                cls.__Reply.add_message( "$open failed, you should at $popular, $search, $newest" )
+        
+        
         
         # ###############################################################
         # ####################### watch this page #######################
         # ###############################################################
-        elif tokens[0] == "$watch" :
+        elif tokens[0] == NhCommand.WATCH :
             # only available while open
             if current_state == NhCommand.OPEN :
                 try :
-                    # get token[1] as page number, if not int -> ValueError
+                    # get token[1] as page number(start from 0), if not int -> ValueError
                     page = int( tokens[1] )
                     
                     # try to get target page from current reading book
                     found, url = cls.__Eyes.get_reading_page_link( page )
                     if found == True :
-                        # TODO : get page image and convert to image message
-                        reply += "$watch done, now you can do $watch, $close, $home"
+                        cls.__Reply.set_url( url )
+                        cls.__Reply.add_message( "$watch done, now you can do $watch, $close, $home" )
+                    
                     else :
-                        reply = "$watch failed, page number out of range"
-                
-                # may be illegal page form
+                        cls.__Reply.add_message( "$watch failed, page number out of range" )
                 except ValueError :
-                    reply = "$watch failed, invalid page parameter"
-            
+                    cls.__Reply.add_message( "$watch failed, invalid page parameter" )
             else :
-                reply = "$watch failed, you should at $open"
+                cls.__Reply.add_message( "$watch failed, you should at $open" )
+        
+        
         
         # ###############################################################
         # #################### close reading gallery ####################
         # ###############################################################
-        elif tokens[0] == "$close" :
+        elif tokens[0] == NhCommand.CLOSE :
             # only available while open
             if current_state == NhCommand.OPEN :
                 # close and clear current reading
@@ -224,11 +251,11 @@ class NhUser :
                 
                 # check if new state is popular
                 if cls.__Eyes.get_current_state( ) == NhCommand.POPULAR :
-                    reply = "$close done, now you can do $open, $home"
+                    cls.__Reply.add_message( "$close done, now you can do $open, $home" )
                 else :
-                    reply = "$close done, now you can do $open, $next(may be failed), $home"
+                    cls.__Reply.add_message( "$close done, now you can do $open, $next(may be failed), $home" )
             else :
-                reply = "$close failed, you should at $open"
+                cls.__Reply.add_message( "$close failed, you should at $open" )
         
         
         # ###############################################################
@@ -238,4 +265,14 @@ class NhUser :
             raise Exception( "This Message is Not a Command !" )
         
         # return reply message to user
-        return reply
+        return cls.__Reply.get_reply_message( )
+
+
+if __name__ == '__main__' :
+    msg = NhUser.do_command( ["$home"] )
+    msg = NhUser.do_command( ["$popular"] )
+    msg = NhUser.do_command( ["$home"] )
+    msg = NhUser.do_command( ["$search", "ichiri", "isekai"] )
+    msg = NhUser.do_command( ["$open", "0"] )
+    msg = NhUser.do_command( ["$watch", "0"] )
+    pass
