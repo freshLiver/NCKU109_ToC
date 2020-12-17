@@ -31,10 +31,18 @@ class NhRequest :
         , '*' : '＊'
     }
     
+    # waring image for image message thumb
+    __WARNING_IMAGE = "https://i.imgur.com/pgJFHsN.jpg"
+    
     
     @staticmethod
     def urlencode ( string: str ) -> str :
         return quote( string )
+    
+    
+    @classmethod
+    def get_warning ( cls ) -> str :
+        return cls.__WARNING_IMAGE
     
     
     @classmethod
@@ -55,11 +63,11 @@ class NhRequest :
         populars = []
         for gallery_item in popular_items :
             # get info from this gallery item
-            info: [str, str, str, list]
+            info: [str, str, list]
             info = cls.__get_info_from_gallery_item( gallery_item )
             
             # add to gallery list
-            populars.append( NhGallery( info[0], info[1], info[2], info[3] ) )
+            populars.append( NhGallery( info[0], info[1], info[2] ) )
         
         return populars
     
@@ -82,7 +90,7 @@ class NhRequest :
             info = cls.__get_info_from_gallery_item( gallery_item )
             
             # add to gallery list
-            galleries.append( NhGallery( info[0], info[1], info[2], info[3] ) )
+            galleries.append( NhGallery( info[0], info[1], info[2] ) )
         
         return galleries
     
@@ -144,7 +152,7 @@ class NhRequest :
     
     @classmethod
     def __legalize_string ( cls, title: str ) -> str :
-        new_title = title
+        new_title = cls.simplify_title( title )
         
         # if any illegal symbol in title, replace it
         for symbol in cls.__ILLEGAL_SYMBOLS :
@@ -155,20 +163,35 @@ class NhRequest :
     
     
     @classmethod
-    def __get_info_from_gallery_item ( cls, gallery_item: BeautifulSoup ) -> [str, str, str, list] :
+    def simplify_title ( cls, title: str ) -> str :
+        
+        # split with ｜ and get first part
+        title = title.split( "|" )[0].split( "｜" )[0]
+        
+        # remove all tags except group and artist
+        parts = list( )
+        try :
+            parts = title.split( "[" )
+            return parts[0] + '[' + parts[1]
+        except :
+            print( parts )
+            return title
+    
+    
+    @classmethod
+    def __get_info_from_gallery_item ( cls, gallery_item: BeautifulSoup ) -> [str, str, list] :
         
         # get info from this gallery item
-        title = gallery_item.a.find( "div", class_ = "caption" ).text
+        title = cls.__legalize_string( gallery_item.a.find( "div", class_ = "caption" ).text )
         link = cls.__HOME + gallery_item.a.get( "href" )
-        cover = gallery_item.a.img.get( "data-src" )
         tags = gallery_item.get( "data-tags" ).split( " " )
         
-        return [title, link, cover, tags]
+        return [title, link, tags]
 
 
 if __name__ == '__main__' :
-    detail = NhRequest.get_detail_from_gallery( "https://nhentai.net/g/339808/" )
+    # detail = NhRequest.get_detail_from_gallery( "https://nhentai.net/g/339808/" )
     # populars = NhRequest.get_popular_galleries( )
-    # result = NhRequest.get_galleries_from( "https://nhentai.net/search/?q=kedama" )
-    res = NhRequest.urlencode( "artist:tamano kedama" )
+    result = NhRequest.get_galleries_from( "https://nhentai.net/search/?q=artist%3Aichiri+isekai" )
+    # res = NhRequest.urlencode( "artist:tamano kedama" )
     pass
