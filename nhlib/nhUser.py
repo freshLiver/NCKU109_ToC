@@ -27,7 +27,7 @@ class NhUser :
             cls.__Hand.reset_link_and_page( )
             
             # reply available commands
-            cls.__Reply.add_message( "$home done, now you can do $popular, $newest, $search, $home" )
+            cls.__Reply.add_message( "$home 成功, 可用的指令有 $popular, $newest, $search, $home" )
         
         
         
@@ -51,11 +51,11 @@ class NhUser :
                     cls.__Eyes.push_state( NhCommand.POPULAR )
                     
                     cls.__Reply.add_message( reply )
-                    cls.__Reply.add_message( "$popular done, now you can do $open, $home" )
+                    cls.__Reply.add_message( "$popular 成功, 可用的指令有 $open, $home" )
                 else :
-                    cls.__Reply.add_message( "$newest failed, newest gallery not found" )
+                    cls.__Reply.add_message( "$popular 失敗, 找不到 $popular" )
             else :
-                cls.__Reply.add_message( "$popular failed, you should at $home" )
+                cls.__Reply.add_message( "$popular 失敗, 必須位在 $home" )
         
         
         
@@ -79,13 +79,13 @@ class NhUser :
                     cls.__Eyes.push_state( NhCommand.NEWEST )
                     
                     cls.__Reply.add_message( reply )
-                    cls.__Reply.add_message( "$newest done, now you can do $open, $next(maybe failed), $home" )
+                    cls.__Reply.add_message( "$newest 成功, 可用的指令有 $open, $next(若沒下一頁會失敗), $home" )
                 
                 else :
-                    cls.__Reply.add_message( "$newest failed, newest gallery not found" )
+                    cls.__Reply.add_message( "$newest 失敗, 找不到 $newest" )
             
             else :
-                cls.__Reply.add_message( "$newest failed, you should at $home" )
+                cls.__Reply.add_message( "$newest 失敗, 必須位在 $home" )
         
         
         
@@ -114,14 +114,14 @@ class NhUser :
                         cls.__Eyes.push_state( NhCommand.SEARCH )
                         
                         cls.__Reply.add_message( reply )
-                        cls.__Reply.add_message( "$search done, now you can do $open, $next(maybe failed), $home" )
+                        cls.__Reply.add_message( "$search 成功, 可用的指令有 $open, $next(若沒下一頁會失敗), $home" )
                     
                     else :
-                        cls.__Reply.add_message( "$search failed, search result not found" )
+                        cls.__Reply.add_message( "$search 失敗, 此關鍵字無搜尋結果" )
                 else :
-                    cls.__Reply.add_message( "$search failed, you should not do search without keywords" )
+                    cls.__Reply.add_message( "$search 失敗, 搜尋帶關鍵字很難嗎？" )
             else :
-                cls.__Reply.add_message( "$search failed, you should at $home" )
+                cls.__Reply.add_message( "$search 失敗, 必須位在 $home" )
         
         
         
@@ -142,11 +142,11 @@ class NhUser :
                     cls.__Eyes.add_galleries( next_page_result )
                     
                     cls.__Reply.add_message( reply )
-                    cls.__Reply.add_message( "$next done, now you can do $open, $next(maybe failed), $home" )
+                    cls.__Reply.add_message( "$next 成功, 可用的指令有 $open, $next(若沒下一頁會失敗), $home" )
                 else :
-                    cls.__Reply.add_message( "$next failed, next page not found" )
+                    cls.__Reply.add_message( "$next 失敗, 找不到下一頁" )
             else :
-                cls.__Reply.add_message( "$next failed, you should at $search or $newest" )
+                cls.__Reply.add_message( "$next 失敗, 必須位在 $search or $newest" )
         
         
         
@@ -169,14 +169,17 @@ class NhUser :
                         cls.__Eyes.clear_galleries( )
                         cls.__Eyes.add_galleries( target_galleries )
                         cls.__Reply.add_message( reply )
-                        cls.__Reply.add_message( "$goto done, now you can do $open, $next(maybe failed), $home" )
+                        cls.__Reply.add_message( "$goto 成功, 可用的指令有 $open, $next(若沒下一頁會失敗), $home" )
                     
                     else :
-                        cls.__Reply.add_message( "$goto failed, target page not found" )
+                        cls.__Reply.add_message( "$goto 失敗, 指定的頁數不存在" )
+                        
+                except IndexError :
+                    cls.__Reply.add_message( "$goto 失敗, 不輸入頁數是要我通靈？" )
                 except ValueError :
-                    cls.__Reply.add_message( "$goto failed, invalid page number" )
+                    cls.__Reply.add_message( "$goto 失敗, 輸入一個頁「數」很難嗎？" )
             else :
-                cls.__Reply.add_message( "$goto failed, you should at $search or $newest" )
+                cls.__Reply.add_message( "$goto 失敗, 必須位在 $search or $newest" )
         
         
         
@@ -189,6 +192,7 @@ class NhUser :
                 # use tokens[1] to select target gallery, if not int -> ValueError
                 try :
                     gallery_index = int( tokens[1] )
+                    
                     gallery: NhGallery
                     found, gallery = cls.__Eyes.get_gallery_by_index( gallery_index )
                     
@@ -202,15 +206,17 @@ class NhUser :
                         reply = cls.__Eyes.get_reading_gallery_info( )
                         
                         cls.__Reply.add_message( reply )
-                        cls.__Reply.add_message( "$open done, now you can do $watch, $close, $home" )
+                        cls.__Reply.add_message( "$open 成功, 可用的指令有 $watch, $close, $home" )
                     
                     # gallery index out of range
                     else :
-                        cls.__Reply.add_message( "$open failed, gallery index out of range" )
+                        cls.__Reply.add_message( "$open 失敗, 輸入範圍內的編號很難嗎" )
+                except IndexError :
+                    cls.__Reply.add_message( "$open 失敗, 不指定哪本是要我通靈？" )
                 except ValueError :
-                    cls.__Reply.add_message( "$open failed, invalid gallery index" )
+                    cls.__Reply.add_message( "$open 失敗, 輸入一個正確的「編號」很難嗎？" )
             else :
-                cls.__Reply.add_message( "$open failed, you should at $popular, $search, $newest" )
+                cls.__Reply.add_message( "$open 失敗, 必須位在 $popular, $search, $newest" )
         
         
         
@@ -220,6 +226,7 @@ class NhUser :
         elif tokens[0] == NhCommand.WATCH :
             # only available while open
             if current_state == NhCommand.OPEN :
+                # check if tokens[1] exist
                 try :
                     # get token[1] as page number(start from 0), if not int -> ValueError
                     page = int( tokens[1] )
@@ -228,14 +235,16 @@ class NhUser :
                     found, url = cls.__Eyes.get_reading_page_link( page )
                     if found == True :
                         cls.__Reply.set_url( url )
-                        cls.__Reply.add_message( "$watch done, now you can do $watch, $close, $home" )
+                        cls.__Reply.add_message( "$watch 成功, 可用的指令有 $watch, $close, $home" )
                     
                     else :
-                        cls.__Reply.add_message( "$watch failed, page number out of range" )
+                        cls.__Reply.add_message( "$watch 失敗, 指定頁數超出範圍" )
+                except IndexError :
+                    cls.__Reply.add_message( "$watch 失敗, 不輸入頁數是要我通靈？" )
                 except ValueError :
-                    cls.__Reply.add_message( "$watch failed, invalid page parameter" )
+                    cls.__Reply.add_message( "$watch 失敗, 輸入正確的頁「數」很難嗎？" )
             else :
-                cls.__Reply.add_message( "$watch failed, you should at $open" )
+                cls.__Reply.add_message( "$watch 失敗, 沒先 $open 是要 $watch 什麼？" )
         
         
         
@@ -252,11 +261,11 @@ class NhUser :
                 
                 # check if new state is popular
                 if cls.__Eyes.get_current_state( ) == NhCommand.POPULAR :
-                    cls.__Reply.add_message( "$close done, now you can do $open, $home" )
+                    cls.__Reply.add_message( "$close 成功, 可用的指令有 $open, $home" )
                 else :
-                    cls.__Reply.add_message( "$close done, now you can do $open, $next(may be failed), $home" )
+                    cls.__Reply.add_message( "$close 成功, 可用的指令有 $open, $next(若沒下一頁會失敗), $home" )
             else :
-                cls.__Reply.add_message( "$close failed, you should at $open" )
+                cls.__Reply.add_message( "$close 失敗, 沒先 $open 是要 $close 什麼？" )
         
         
         # ###############################################################
@@ -264,6 +273,9 @@ class NhUser :
         # ###############################################################
         else :
             raise Exception( "This Message is Not a Command !" )
+        
+        # add current state
+        cls.__Reply.add_message( "目前位於 {0}".format( cls.__Eyes.get_current_state( ) ) )
         
         # return reply message to user
         return cls.__Reply
