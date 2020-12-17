@@ -49,6 +49,14 @@ class NhBook :
         # @formatter:on
         self.__images.clear( )
     
-    # **********************************************************
-    # ********************* private methods ********************
-    # **********************************************************
+    
+    def book_info_to_reply ( self ) -> str :
+        reply = ""
+        # convert book info into reply form
+        reply += """+ 標題：{0}\n""".format( self.__title )
+        reply += """+ 編號：{0}\n""".format( self.__gallery_id )
+        reply += """+ 連結：{0}\n""".format( self.__gallery_link )
+        reply += """+ 頁數：{0}\n""".format( self.__total_pages )
+        reply += """+ 愛心：{0}\n""".format( self.__favorites )
+        
+        return reply
