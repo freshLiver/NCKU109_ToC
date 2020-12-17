@@ -22,15 +22,13 @@ class NhGallery :
     def get_reply_form ( self, index = None ) -> str :
         
         # if given index, show index in reply message
-        reply = "" if index is None else "Gallery  : {0}".format( index )
+        reply = "" if index is None else "Gallery  : {0}\n".format( index )
         
         # convert gallery info into reply form
-        reply += """
-        -- Title : {0}
-        -- Lang  : {1}
-        -- Link  : {2}
-        -- Cover : {3}
-        ---------------------------------
-        """.format( self.title, self.lang, self.link, self.cover )
+        reply += """-- Title : {0}\n""".format( self.title )
+        reply += """-- Lang  : {0}\n""".format( self.lang )
+        reply += """-- Link  : {0}\n""".format( self.link )
+        reply += """-- Cover : {0}\n""".format( self.cover )
+        reply += "---------------------------------\n\n"
         
         return reply
