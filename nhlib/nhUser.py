@@ -66,7 +66,7 @@ class NhUser :
             # only available while current state is home
             if current_state == NhCommand.HOME :
                 # get newest galleries and convert to reply form
-                newest = cls.__Hand.get_newest_result( 0 )
+                newest = cls.__Hand.get_newest_result( 1 )
                 found, reply = NhEyes.galleries_to_reply_form( newest )
                 
                 # check if any galleries found
@@ -194,11 +194,12 @@ class NhUser :
                     
                     # check if this index out of range
                     if found == True :
-                        # get opened gallery info and convert to reply form
-                        reply = gallery.get_reply_form( None )
                         # open gallery and set it new book
-                        cls.__Eyes.check_this_gallery( gallery_index )
+                        cls.__Eyes.open_this_gallery( gallery_index )
                         cls.__Eyes.push_state( NhCommand.OPEN )
+                        
+                        # get opened gallery info
+                        reply = cls.__Eyes.get_reading_gallery_info( )
                         
                         cls.__Reply.add_message( reply )
                         cls.__Reply.add_message( "$open done, now you can do $watch, $close, $home" )
@@ -265,14 +266,15 @@ class NhUser :
             raise Exception( "This Message is Not a Command !" )
         
         # return reply message to user
-        return cls.__Reply.get_reply_message( )
+        return cls.__Reply
 
 
 if __name__ == '__main__' :
+    # msg = NhUser.do_command( ["$home"] )
+    # msg = NhUser.do_command( ["$popular"] )
     msg = NhUser.do_command( ["$home"] )
-    msg = NhUser.do_command( ["$popular"] )
-    msg = NhUser.do_command( ["$home"] )
-    msg = NhUser.do_command( ["$search", "ichiri", "isekai"] )
-    msg = NhUser.do_command( ["$open", "0"] )
-    msg = NhUser.do_command( ["$watch", "0"] )
+    msg = NhUser.do_command( ["$newest"] )
+    # msg = NhUser.do_command( ["$search", "ichiri", "isekai"] )
+    # msg = NhUser.do_command( ["$open", "0"] )
+    # msg = NhUser.do_command( ["$watch", "0"] )
     pass
