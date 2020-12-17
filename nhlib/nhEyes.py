@@ -7,7 +7,7 @@ class NhEyes :
     
     def __init__ ( self ) :
         self.__states: [NhCommand]
-        self.__states = list( )
+        self.__states = [NhCommand.HOME]  # start at home state
         self.__galleries: [NhGallery]
         self.__galleries = list( )
         self.__reading = NhBook( )
@@ -50,9 +50,9 @@ class NhEyes :
         self.__states.append( state )
     
     
-    def set_this_gallery_new_book ( self, gallery_index: int ) :
+    def check_this_gallery ( self, gallery_index: int ) :
         gallery = self.__galleries[gallery_index]
-        self.__reading.check_this_book( gallery.link )
+        self.__reading.set_this_gallery( gallery.link )
     
     
     # *********************************************************
@@ -93,7 +93,7 @@ class NhEyes :
     
     
     def clear_state ( self ) :
-        self.__states.clear( )
+        self.__states = [NhCommand.HOME]
     
     
     def clear_galleries ( self ) :

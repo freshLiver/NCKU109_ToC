@@ -15,7 +15,7 @@ class NhBook :
         # @formatter:on
     
     
-    def check_this_book ( self, link: str ) :
+    def set_this_gallery ( self, link: str ) :
         # use url to get gallery info
         details: [str, str, str, int, int, list]
         details = NhRequest.get_detail_from_gallery( link )
