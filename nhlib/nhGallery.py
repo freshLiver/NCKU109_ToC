@@ -1,9 +1,8 @@
 class NhGallery :
     
-    def __init__ ( self, title: str, link: str, cover: str, tags: list ) :
+    def __init__ ( self, title: str, link: str, tags: list ) :
         self.title = title
         self.link = link
-        self.cover = cover
         self.tags = tags
         self.lang = NhGallery.__extract_lang_from_tags( tags )
     
@@ -22,13 +21,11 @@ class NhGallery :
     def get_reply_form ( self, index = None ) -> str :
         
         # if given index, show index in reply message
-        reply = "" if index is None else "Gallery  : {0}\n".format( index )
+        reply = "" if index is None else "- {0}\n".format( index )
         
         # convert gallery info into reply form
-        reply += """-- Title : {0}\n""".format( self.title )
-        reply += """-- Lang  : {0}\n""".format( self.lang )
-        reply += """-- Link  : {0}\n""".format( self.link )
-        reply += """-- Cover : {0}\n""".format( self.cover )
-        reply += "---------------------------------\n\n"
+        reply += """+ 標題: {0}\n""".format( self.title )
+        reply += """+ 語言: {0}\n""".format( self.lang )
+        reply += """+ 連結: {0}\n\n""".format( self.link )
         
         return reply
