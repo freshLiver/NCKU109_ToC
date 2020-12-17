@@ -2,7 +2,6 @@ from requests import get
 from requests.utils import quote
 
 from bs4 import BeautifulSoup
-import typing
 
 from nhlib.nhBook import *
 from nhlib.nhGallery import *
@@ -103,8 +102,13 @@ class NhRequest :
         soup = cls.__get2soup( gallery_link )
         info_raw = soup.find( "div", id = "info" )
         
-        # get title and convert to legal title
-        title = cls.__legalize_string( info_raw.find( "h2", class_ = "title" ) )
+        # get title (sometimes no jp title)
+        if info_raw.find( "h2", class_ = "title" ) is None :
+            title = info_raw.find( "h1", class_ = "title" ).text
+        else :
+            title = info_raw.find( "h2", class_ = "title" ).text
+        # convert title to legal title
+        title = cls.__legalize_string( title )
         
         # get gallery id, num of favorite of this gallery
         gallery_id = info_raw.find( "h3", id = "gallery_id" ).text
@@ -114,7 +118,7 @@ class NhRequest :
         tags = info_raw.find( "section", id = "tags" ).find_all( "div" )
         for tag in tags :
             if "Pages" in tag.contents[0] :
-                pages = tag.span.text
+                pages = int( tag.span.text )
                 break
         
         # get all image links base on thumbs
@@ -163,7 +167,7 @@ class NhRequest :
 
 
 if __name__ == '__main__' :
-    # detail = NhRequest.get_detail_from_gallery( "https://nhentai.net/g/339808/" )
+    detail = NhRequest.get_detail_from_gallery( "https://nhentai.net/g/339808/" )
     # populars = NhRequest.get_popular_galleries( )
     # result = NhRequest.get_galleries_from( "https://nhentai.net/search/?q=kedama" )
     res = NhRequest.urlencode( "artist:tamano kedama" )
