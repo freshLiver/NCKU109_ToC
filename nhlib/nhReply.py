@@ -25,7 +25,8 @@ class NhReply :
     def get_reply_message ( self ) -> [str or None, str] :
         reply = ""
         # concatenate all message
-        for msg in self.__messages :
+        for msg in self.__messages[:-1] :
             reply += """{0}\n""".format( msg )
+        reply += """{0}""".format( self.__messages[-1] )
         
         return [self.__link, reply]
