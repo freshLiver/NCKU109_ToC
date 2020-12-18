@@ -24,6 +24,10 @@ class NhMachine( GraphMachine ) :
         self.__Reply.reset( )
     
     
+    def get_current_state ( self ) -> NhCommand :
+        return self.__Eyes.get_current_state( )
+    
+    
     # #############################################################
     # ##################### back to home page #####################
     # #############################################################
@@ -370,10 +374,6 @@ class NhMachine( GraphMachine ) :
     
     def on_exit_open ( self, tokens = None ) :
         print( "exit open" )
-    
-    
-    def get_current_state ( self ) -> NhCommand :
-        return self.__Eyes.get_current_state( )
     
     
     # ###############################################################
