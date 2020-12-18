@@ -5,7 +5,7 @@ from nhlib.nhGallery import *
 from nhlib.nhReply import *
 
 
-class NhUser :
+class NhUser( ) :
     __Hand = NhHand( )
     __Eyes = NhEyes( )
     __Reply = NhReply( )
@@ -17,37 +17,37 @@ class NhUser :
         current_state = cls.__Eyes.get_current_state( )
         
         if tokens[0] == NhCommand.HOME :
-            cls.state_home( )
+            cls.home( )
         
         elif tokens[0] == NhCommand.HELP :
-            cls.state_help( )
+            cls.help( )
         
         elif tokens[0] == NhCommand.SWITCH :
-            cls.state_switch( )
+            cls.switch( )
         
         elif tokens[0] == NhCommand.POPULAR :
-            cls.state_popular( current_state )
+            cls.popular( current_state )
         
         elif tokens[0] == NhCommand.NEWEST :
-            cls.state_newest( current_state )
+            cls.newest( current_state )
         
         elif tokens[0] == NhCommand.SEARCH :
-            cls.state_search( current_state )
+            cls.search( current_state )
         
         elif tokens[0] == NhCommand.NEXT :
-            cls.state_next( current_state )
+            cls.next( current_state )
         
         elif tokens[0] == NhCommand.GOTO :
-            cls.state_goto( current_state )
+            cls.goto( current_state )
         
         elif tokens[0] == NhCommand.OPEN :
-            cls.state_open( current_state )
+            cls.open( current_state )
         
         elif tokens[0] == NhCommand.WATCH :
-            cls.state_watch( current_state )
+            cls.watch( current_state )
         
         elif tokens[0] == NhCommand.CLOSE :
-            cls.state_close( current_state )
+            cls.close( current_state )
         
         else :
             raise Exception( "This Message is Not a Command !" )
@@ -63,7 +63,7 @@ class NhUser :
     # ##################### back to home page #####################
     # #############################################################
     @classmethod
-    def state_home ( cls ) :
+    def home ( cls ) :
         # reset status and page
         cls.__Eyes.clear_state( )
         cls.__Eyes.clear_galleries( )
@@ -78,7 +78,7 @@ class NhUser :
     # ################ show help info (state graph) ################
     # ##############################################################
     @classmethod
-    def state_help ( cls ) :
+    def help ( cls ) :
         help_msg = ""
         help_msg += """\n┌─ {0} (預設, 可在任何狀態使用)""".format( NhCommand.HOME )
         help_msg += """\n├─ {0} (可在任何狀態使用)""".format( NhCommand.HELP )
@@ -98,10 +98,10 @@ class NhUser :
     
     
     # ###############################################################
-    # #################### NOT BELONGS ANY STATE ####################
+    # ################ send picture with R18 warning ################
     # ###############################################################
     @classmethod
-    def state_switch ( cls ) :
+    def switch ( cls ) :
         healthy_mode = cls.__Eyes.toggle_mode( )
         if healthy_mode == True :
             cls.__Reply.add_message( "開啟健康模式" )
@@ -113,7 +113,7 @@ class NhUser :
     # #################### get popular galleries ####################
     # ###############################################################
     @classmethod
-    def state_popular ( cls, current_state: NhCommand ) :
+    def popular ( cls, current_state: NhCommand ) :
         # only available while current state is home
         if current_state == NhCommand.HOME :
             # get popular galleries and convert to reply form
@@ -141,7 +141,7 @@ class NhUser :
     # #################### get newest galleries ####################
     # ##############################################################
     @classmethod
-    def state_newest ( cls, current_state: NhCommand ) :
+    def newest ( cls, current_state: NhCommand ) :
         # only available while current state is home
         if current_state == NhCommand.HOME :
             # get newest galleries and convert to reply form
@@ -171,7 +171,7 @@ class NhUser :
     # ###################### search galleries ######################
     # ##############################################################
     @classmethod
-    def state_search ( cls, current_state: NhCommand ) :
+    def search ( cls, current_state: NhCommand ) :
         # only available while current state is home
         if current_state == NhCommand.HOME :
             # use remain tokens as keywords to search
@@ -207,7 +207,7 @@ class NhUser :
     # ####################### goto next page #######################
     # ##############################################################
     @classmethod
-    def state_next ( cls, current_state: NhCommand ) :
+    def next ( cls, current_state: NhCommand ) :
         # only available while search or newest
         if current_state in [NhCommand.SEARCH, NhCommand.NEWEST] :
             # get next page galleries and convert to replay form
@@ -232,7 +232,7 @@ class NhUser :
     # ######################## goto page N ########################
     # #############################################################
     @classmethod
-    def state_goto ( cls, current_state: NhCommand ) :
+    def goto ( cls, current_state: NhCommand ) :
         # only available while search or newest
         if current_state in [NhCommand.SEARCH, NhCommand.NEWEST] :
             try :
@@ -265,11 +265,11 @@ class NhUser :
             cls.__Reply.add_message( "$goto 失敗, 必須位在 $search or $newest" )
     
     
-    # ##############################################################
-    # ##################### open this gallery #####################
-    # ##############################################################
+    # ###############################################################
+    # ###################### open this gallery ######################
+    # ###############################################################
     @classmethod
-    def state_open ( cls, current_state: NhCommand ) :
+    def open ( cls, current_state: NhCommand ) :
         # only available while popular, search, newest
         if current_state in [NhCommand.POPULAR, NhCommand.SEARCH, NhCommand.NEWEST] :
             # use tokens[1] to select target gallery, if not int -> ValueError
@@ -306,7 +306,7 @@ class NhUser :
     # #################### close reading gallery ####################
     # ###############################################################
     @classmethod
-    def state_close ( cls, current_state: NhCommand ) :
+    def close ( cls, current_state: NhCommand ) :
         # only available while open
         if current_state == NhCommand.OPEN :
             # close and clear current reading
@@ -327,7 +327,7 @@ class NhUser :
     # ####################### watch this page #######################
     # ###############################################################
     @classmethod
-    def state_watch ( cls, current_state: NhCommand ) :
+    def watch ( cls, current_state: NhCommand ) :
         # only available while open
         if current_state == NhCommand.OPEN :
             # check if tokens[1] exist
