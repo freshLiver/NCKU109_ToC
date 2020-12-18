@@ -14,27 +14,126 @@ from nhlib.nhCommand import *
 from nhlib.nhUser import *
 from nhlib.nhReply import *
 from nhlib.nhRequest import *
+from nhlib.nhMachine import *
 
 load_dotenv( )
 
-machine = TocMachine(
-        states = ["user", "state1", "state2"],
+machine = NhMachine(
+        states = ["home", "help", "switch",
+                  "popular", "newest", "search",
+                  "next", "goto", "open",
+                  "watch", "close"],
         transitions = [
+            # home
             {
-                "trigger" : "advance",
-                "source" : "user",
-                "dest" : "state1",
-                "conditions" : "is_going_to_state1",
+                "trigger" : "do",
+                "source" : ["home", "popular", "newest", "search", "open"],
+                "dest" : "home",
+                "conditions" : "home",
             },
+            # help
             {
-                "trigger" : "advance",
-                "source" : "user",
-                "dest" : "state2",
-                "conditions" : "is_going_to_state2",
+                "trigger" : "do",
+                "source" : ["home", "popular", "newest", "search", "open"],
+                "dest" : "help",
+                "conditions" : "help",
             },
-            { "trigger" : "go_back", "source" : ["state1", "state2"], "dest" : "user" },
+            # switch
+            {
+                "trigger" : "do",
+                "source" : ["home", "popular", "newest", "search", "open"],
+                "dest" : "switch",
+                "conditions" : "switch",
+            },
+            # help/switch done
+            {
+                "trigger" : "done",
+                "source" : ["help", "switch"],
+                "dest" : "home",
+            },
+            # popular
+            {
+                "trigger" : "do",
+                "source" : ["home", "popular", "newest", "search", "open"],
+                "dest" : "popular",
+                "conditions" : "popular",
+            },
+            # newest
+            {
+                "trigger" : "do",
+                "source" : ["home", "popular", "newest", "search", "open"],
+                "dest" : "newest",
+                "conditions" : "newest",
+            },
+            # search
+            {
+                "trigger" : "do",
+                "source" : ["home", "popular", "newest", "search", "open"],
+                "dest" : "search",
+                "conditions" : "search",
+            },
+            # next
+            {
+                "trigger" : "do",
+                "source" : ["home", "popular", "newest", "search", "open"],
+                "dest" : "next",
+                "conditions" : "next",
+            },
+            # goto
+            {
+                "trigger" : "do",
+                "source" : ["home", "popular", "newest", "search", "open"],
+                "dest" : "goto",
+                "conditions" : "goto",
+            },
+            # open
+            {
+                "trigger" : "do",
+                "source" : ["home", "popular", "newest", "search", "open"],
+                "dest" : "open",
+                "conditions" : "open",
+            },
+            # popular done
+            {
+                "trigger" : "popular_done",
+                "source" : "open",
+                "dest" : "popular",
+            },
+            # newest done
+            {
+                "trigger" : "newest_done",
+                "source" : ["next", "goto", "close"],
+                "dest" : "newest",
+            },
+            # search done
+            {
+                "trigger" : "search_done",
+                "source" : ["next", "goto", "close"],
+                "dest" : "saerch",
+            },
+            # watch
+            {
+                "trigger" : "do",
+                "source" : ["home", "popular", "newest", "search", "open"],
+                "dest" : "watch",
+                "conditions" : "watch",
+            },
+            # watch done
+            {
+                "trigger" : "watch_done",
+                "source" : "watch",
+                "dest" : "open",
+            },
+            # close
+            {
+                "trigger" : "do",
+                "source" : ["home", "popular", "newest", "search", "open"],
+                "dest" : "close",
+                "conditions" : "close",
+            },
         ],
-        initial = "user",
+        initial = "home"
+                  "",
         auto_transitions = False,
         show_conditions = True,
 )
@@ -117,7 +216,9 @@ def webhook_handler ( ) :
         # if this is a command, do this command
         if legal == True :
             # call user.do_command and get NhReply
-            img_url, reply = NhUser.do_command( tokens ).get_reply_message( )
+            machine.reset_reply( )
+            machine.do( tokens )
+            img_url, reply = machine.get_reply( ).get_reply_message( machine.get_current_state( ) )
             
             # check if this has image url
             if img_url is not None :
@@ -125,13 +226,15 @@ def webhook_handler ( ) :
                 send_image_by_url( event.reply_token, img_url, NhRequest.get_warning( ), NhEyes.get_mode( ) )
             # reply user with message
             send_text_message( event.reply_token, event.source.user_id, reply )
-    
-    # print( f"\nFSM STATE: {machine.state}" )
-    # print( f"REQUEST BODY: \n{body}" )
-    # response = machine.advance( event )
-    # if response == False :
-    # send_text_message( event.reply_token, resp )
-    # send_image_by_url( event.reply_token, "https://i.imgur.com/Rk6HdeA.jpg", "https://i.imgur.com/pgJFHsN.jpg" )
+        
+        #
+        #
+        #
+        # print( f"\nFSM STATE: {machine.state}" )
+        # print( f"REQUEST BODY: \n{body}" )
+        # response = machine.advance( event )
+        # if response == False :
+        #     send_text_message( event.reply_token, resp )
     
     return "OK"
 
