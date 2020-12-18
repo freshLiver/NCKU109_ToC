@@ -74,7 +74,7 @@ class NhEyes :
     # *********************** get status **********************
     # *********************************************************
     
-    def get_current_state ( self ) -> str :
+    def get_current_state ( self ) -> NhCommand :
         # return last state in states (stack::top)
         return self.__states[len( self.__states ) - 1]
     
