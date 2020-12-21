@@ -28,7 +28,7 @@ class NhReply :
     def get_reply_message ( self, current_state: NhCommand ) -> [str or None, str] :
         
         # append with current state
-        self.add_message( "※ 目前位於 --> {0}".format( current_state ) )
+        self.add_message( "\n※ 目前位於 {0}, 可以使用 {1} 查看指令".format( current_state, NhCommand.HELP ) )
         
         # concatenate all message
         reply = ""
