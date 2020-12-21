@@ -30,11 +30,11 @@
 而爬蟲的結果或是當前正在觀看的漫畫的資訊就是使用者眼睛所見的內容，因此會將這類資料存到 Eyes 中
 
 
-!structure image
+![bot structure](./structure.png)
 
 而根據這個架構做出的 bot 則可以畫出下面的下面的 finite state machine 的圖
 
-!()[./fsm.png]
+![fsm](./fsm.png)
 
 雖然在上面的 FSM 中看起來大部分的 state 之間都有相連，看起來應該能夠在這些 state 之間進行移動
 
@@ -57,7 +57,7 @@
 
 所以實際上的圖應該以下方的圖來呈現會比較合適
 
-!real-fsm-image
+![image](./fsm-real.png)
 
 ## 已知缺點
 
