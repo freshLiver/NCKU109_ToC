@@ -64,3 +64,35 @@
 在部份 class 中是使用 static variable 來儲存資訊
 
 因此如果有多人同時使用這個 bot 的話會可能造成互相影響的狀況
+
+## WARNING 
+
+以下可能包含成年內容，請三思而入
+
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+
+## 示範圖片
+
+### 最近更新的漫畫
+![image](./image/sample1.png)
+
+### 搜尋漫畫
+![image](./image/sample4.png)
+
+### 開啟漫畫以及指定頁面
+![image](./image/sample2.png)
+
+### 切換傳圖模式以及錯誤指令提示
+![image](./image/sample3.png)
+
+
+
