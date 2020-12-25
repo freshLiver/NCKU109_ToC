@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "cfd30b7a522604ee3fb0e835baccc38a6351f7884a7747e9fada507852d23d72"
+            "sha256": "cd77a0907d67add193d6cbc9aa06864ae87f7a836a5f04f05876d7e7fa9fb094"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -142,12 +142,28 @@
             "index": "pypi",
             "version": "==1.1.1"
         },
+        "pydot-ng": {
+            "hashes": [
+                "sha256:251ec5cde0d20ebd467b12fd8a4db0f52d2fbf6e12660a969a226823ba38644e",
+                "sha256:8c8073b97aa7030c28118961e2c6c92f046e4cb57aeba7df87146f7baa6530c5"
+            ],
+            "index": "pypi",
+            "version": "==2.0.0"
+        },
         "pygraphviz": {
             "hashes": [
                 "sha256:50a829a305dc5a0fd1f9590748b19fece756093b581ac91e00c2c27c651d319d"
             ],
             "index": "pypi",
             "version": "==1.5"
+        },
+        "pyparsing": {
+            "hashes": [
+                "sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1",
+                "sha256:ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b"
+            ],
+            "index": "pypi",
+            "version": "==2.4.7"
         },
         "python-dotenv": {
             "hashes": [
@@ -178,7 +194,7 @@
                 "sha256:4bb21a6ee4707bf43b61230e80740e71bfe56e55d1f1f50924b087bb2975c851",
                 "sha256:6dc52924dc0bc710a5d16794e6b3480b2c7c08b07729505feab2b2c16661ff6e"
             ],
-            "markers": "python_version >= '3.0'",
+            "index": "pypi",
             "version": "==2.1"
         },
         "transitions": {
@@ -208,4 +224,3 @@
     },
     "develop": {}
 }
-
