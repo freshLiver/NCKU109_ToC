@@ -67,7 +67,9 @@
 
 ## WARNING 
 
-以下可能包含成年內容，請三思而入
+以下可能包含不適合在公共場合觀看的內容
+
+請三思後再往下看
 
 .
 
@@ -93,16 +95,16 @@
 ## 示範圖片
 
 ### 最近更新的漫畫
-![image](./image/sample1.png)
+![image](./img/sample1.png)
 
 ### 搜尋漫畫
-![image](./image/sample4.png)
+![image](./img/sample4.png)
 
 ### 開啟漫畫以及指定頁面
-![image](./image/sample2.png)
+![image](./img/sample2.png)
 
 ### 切換傳圖模式以及錯誤指令提示
-![image](./image/sample3.png)
+![image](./img/sample3.png)
 
 
 
